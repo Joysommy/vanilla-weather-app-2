@@ -39,6 +39,7 @@ function displayTemperature(response) {
 }
 
 let apiKey = "75682493619b783a70bb68caa28efb07";
-let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=Enugu&appid=${apiKey}&units=metrics`;
+let city = "Enugu";
+let apiUrl = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${apiKey}&units=metric`;
 
 axios.get(apiUrl).then(displayTemperature);
