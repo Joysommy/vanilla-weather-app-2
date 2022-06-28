@@ -20,41 +20,59 @@ function formatDate(timestamp) {
   let day = days[date.getDay()];
   return `${day} ${hours}:${minutes}`;
 }
+function formatDay(timestamp) {
+  let date = new Date(timestamp * 1000);
+  let day = date.getDay();
+  let days = ["Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"];
 
-function displayForecast() {
+  return days[day];
+}
+
+function displayForecast(response) {
+  let forecast = response.data.daily;
   let forecastElement = document.querySelector("#forecast");
 
-  let forecastHTML = `<div class ="row>`;
-  let days = ["Tue", "Wed", "Thur", "Fri", "Sat"];
-  days.forEach(function (day) {
-    forecastHTML =
-      forecastHTML +
-      `     
+  let forecastHTML = `<div class ="row">`;
+
+  forecast.forEach(function (forecastDay, index) {
+    if (index < 6) {
+      forecastHTML =
+        forecastHTML +
+        `     
               
               <div class="col-2">
                 <div class="weather-forecast-date">
-                ${day}
+                ${formatDay(forecastDay.dt)}
                 </div>
-                <img src="http://openweathermap.org/img/wn/50d@2x.
-                png"
+                <img src="http://openweathermap.org/img/wn/${
+                  forecastDay.weather[0].icon
+                }@2x.png"
                  alt="" 
                  width="42" 
                  />
                  <div class="weather-forecast-temperature">
                   <span class="weather-forecast-temperature-max">
-                 22° 
+                 ${Math.round(forecastDay.temp.max)}°
                   </span>
                   <span class="weather-forecast-temperature-min">
-                    18°
+                        ${Math.round(forecastDay.temp.min)}°
                   </span>
                 </div>
               </div>
                `;
+    }
   });
 
   forecastHTML = forecastHTML + `</div>`;
   forecastElement.innerHTML = forecastHTML;
-  console.log(forecastHTML);
+}
+
+function getForecast(coordinates) {
+  console.log(coordinates);
+  let apiKey = "75682493619b783a70bb68caa28efb07";
+  let apiUrl = `https://api.openweathermap.org/data/2.5/onecall?lat=${coordinates.lat}&lon=${coordinates.lon}&appid=${apiKey}&units=metric`;
+  console.log(apiUrl);
+  axios.get(apiUrl).then(displayForecast);
 }
 
 function displayTemperature(response) {
@@ -79,6 +97,8 @@ function displayTemperature(response) {
   );
 
   iconElement.setAttribute("alt", response.data.weather[0].description);
+
+  getForecast(response.data.coord);
 }
 
 function search(city) {
@@ -125,5 +145,3 @@ let celsiusLink = document.querySelector("#celsius-link");
 celsiusLink.addEventListener("click", displayCelsiusTemperature);
 
 search("Enugu");
-
-displayForecast();
